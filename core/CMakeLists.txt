@@ -1,6 +1,11 @@
 
 
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/log SOURCE_FILE)
+file(GLOB_RECURSE SOURCE_FILE 
+    "protobuf/*.cpp"  
+    "common/*.cpp"
+    "log/*.cpp"
+    "./*.cpp"
+)
 
 
 add_library(core ${SOURCE_FILE})

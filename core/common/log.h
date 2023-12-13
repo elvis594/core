@@ -7,11 +7,15 @@
 #include <sstream>
 #include <string>
 
+#include "core/binary.h"
+
 // 定义函数式日志宏
-#define LOG_INFO(fmt, ...) spdlog::info(fmt, ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...) spdlog::warn(fmt, ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...) spdlog::error(fmt, ##__VA_ARGS__)
-#define LOG_DEBUG(fmt, ...) spdlog::debug(fmt, ##__VA_ARGS__)
+#include <spdlog/spdlog.h>
+
+#define LOG_INFO(fmt, ...)    SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::info,    fmt, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...)    SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::warn,    fmt, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...)   SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::err,     fmt, ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...)   SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::debug,   fmt, ##__VA_ARGS__)
 
 
 //基于流的形式的log
@@ -26,7 +30,7 @@
 #define SLOG_DEBUG LOG_MODULE(MODULE_NAME,DEBUG)
 
 #ifndef MODULE_NAME
-#define MODULE_NAME ""
+#define MODULE_NAME core::binary::getName()
 #endif // !MODULE_NAME
 
 
@@ -40,7 +44,7 @@
 #endif
 
 #define LEFT_BRACKET "["
-#define RIGHT_BRACKET "]"
+#define RIGHT_BRACKET "] "
 
 // Modified logging macros
 #define LOG_MODULE_STREAM_INFO(module) SpdLogMessage(__FILE__, __LINE__, spdlog::level::info).stream() << LEFT_BRACKET  << module << RIGHT_BRACKET
@@ -60,9 +64,8 @@ public:
 
     ~SpdLogMessage() {
         std::ostringstream oss;
-        oss << file_ << ":" << line_ << " " << stream_.str();
+        oss << "["<<file_ << ":" << line_ << "] " << stream_.str();
         auto message = oss.str();
-
         switch (level_) {
             case spdlog::level::info:
                 spdlog::info(message);
